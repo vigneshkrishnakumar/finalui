@@ -1,0 +1,118 @@
+<div class="container">
+    <span class="h4 text-success">{{status}}</span>
+    <span class="h4 text-danger">{{error}}</span>
+  </div>
+  <form [formGroup]="myForm" (submit)="onSubmit()">
+  <div formGroupName="projectGroup">
+      <div class="form-group row">
+          <label for="project" class="col-sm-2 col-form-label"><b>Project:</b></label>
+          <div class="col-sm-3">
+          <input type="text" class="form-control" id="project" name="project" formControlName="project">
+          <small class="text-danger" *ngIf="!myForm.controls['projectGroup']['controls'].project.valid && myForm.controls['projectGroup']['controls'].project.touched">Project required!!</small>
+        </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-6">
+            <input type="checkbox" class="form-check-input" id="dateCheck" name="dateCheck" [checked]="enableDate" (change)="enableDate = !enableDate">
+            <label for="dateCheck" class="form-check-label">Set Start and End Date</label>
+          </div>
+          <label for="startDate" *ngIf="enableDate" class="col-form-label"><b>Start Date:</b></label>
+          <div class="col-sm-2">
+            <input type="date" *ngIf="enableDate" class="form-control" id="startDate" name="startDate" formControlName="startDate">
+          </div>
+          <label for="endDate" *ngIf="enableDate" class="col-form-label"><b>End Date:</b></label>
+          <div class="col-sm-2">
+            <input type="date" *ngIf="enableDate" class="form-control" id="endDate" name="endDate" formControlName="endDate">
+          </div>
+      </div>
+      <div class="form-group row">
+          <label for="priority" class="col-sm-2 col-form-label"><b>Priority:</b></label>
+          <span class="font-weight-bold blue-text mr-0 mt-0">0</span>
+          <div class="col-sm-3">
+          <input type="range" class="custom-range" min="0" max="30" step="1" id="priority" name="priority" formControlName="priority">
+          <small class="text-danger" *ngIf="!myForm.controls['projectGroup']['controls'].priority.valid && myForm.controls['projectGroup']['controls'].priority.touched">Priority required!!</small>
+        </div>
+        <span class="font-weight-bold blue-text ml-0 mt-0">30</span>
+      </div>
+      <div class="form-group row">
+          <label for="user" class="col-sm-2 col-form-label"><b>Manager:</b></label>
+          <div class="col-sm-3">
+          <input type="text" class="form-control" [(ngModel)]="user.firstName" readonly id="user" name="user" formControlName="user">
+          <small class="text-danger" *ngIf="!myForm.controls['projectGroup']['controls'].user.valid && myForm.controls['projectGroup']['controls'].user.touched">User required!!</small>
+        </div>
+        <div class="col-50"><button type="button" class="btn btn-primary  mr-3" data-toggle="modal" data-target="#userModal" (click)="getUsers()">Search</button></div>
+      </div>
+      <div class="form-group row">
+          <div class="col-7">
+          <button type="submit" class="btn btn-primary  mr-3">{{btnType}}</button>
+          <button type="button" class="btn btn-primary" (click)="resetForm()">Reset</button>
+          </div>
+      </div>
+  </div>
+  </form>
+  <hr/>
+  <div class="form-group row">
+      <label for="search" class="col-sm-1 col-form-label"><b>Search:</b></label>
+      <div class="col-sm-3">
+        <input type="text" #project (keyup)="0" class="form-control" id="search" name="search">
+      </div>
+      <label class="col-form-label"><b>Sort By:</b></label>
+      <div class="col-sm-5">
+          <button type="button" (click) = "sortBy('projectStartDate')" class="btn btn-primary  mr-3">Start Date</button>
+          <button type="button" (click) = "sortBy('projectEndDate')" class="btn btn-primary  mr-3">End Date</button>
+          <button type="button" (click) = "sortBy('projectPriority')" class="btn btn-primary  mr-3">Priority</button>
+          <button type="button" (click) = "sortBy('projectCompleted')" class="btn btn-primary  mr-3">Completed</button>
+      </div>
+  </div>
+  <hr/>
+      <div class="row" *ngFor="let project of projects | projectfilter : project.value | projectsortfilter : property">
+          <div class="col-5"><div class="card text-white bg-secondary w-60 p-3">
+              <div class="card-body">
+                  <h5 class="card-title">{{project.project}}</h5>
+                  <div class="row">
+                      <div class="col"><b>No. of Tasks:</b> {{project.tasks?.length}}</div>
+                      <div class="col"><b>Start Date:</b> {{project.startDate}}</div>
+                      <div class="w-100"></div>
+                      <div class="col"><b>Completed:</b> {{project.compTasks}}</div>
+                      <div class="col"><b>End Date:</b> {{project.endDate}}</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+          <div class="col-2" style="text-align:left;">
+            <label class="col-form-label"><b>Priority</b></label>
+            <div class="card text-white bg-secondary w-50 p-3">
+              <div class="card-body">
+                  <h5 class="card-title">{{project.priority}}</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-1"><button type="button" class="btn btn-primary" routerLink="/addProject/{{project.projectId}}">Update
+            </button></div>
+          <div class="col-1"><button type="button" class="btn btn-danger" (click)="deleteProject(project.projectId)">Suspend
+            </button></div>
+        </div>
+<!-- User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userTitle">Users</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeUserModal>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="list-group" *ngFor="let user of users">
+                <li class="list-group-item list-group-item-action" (click)="selectedUser(user.userId)">
+                  {{user.firstName}}
+                </li>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>

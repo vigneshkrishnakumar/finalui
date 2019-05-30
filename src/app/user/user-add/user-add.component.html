@@ -1,0 +1,68 @@
+<div class="container">
+    <span class="h4 text-success">{{status}}</span>
+  </div>
+  <form [formGroup]="myForm" (submit)="onSubmit()">
+  <div formGroupName="userGroup">
+      <div class="form-group row">
+          <label for="firstName" class="col-sm-2 col-form-label"><b>First Name:</b></label>
+          <div class="col-sm-3">
+          <input type="text" class="form-control" id="firstName" name="firstName" formControlName="firstName">
+          <small class="text-danger" *ngIf="!myForm.controls['userGroup']['controls'].firstName.valid && myForm.controls['userGroup']['controls'].firstName.touched">Project required!!</small>
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="lastName" class="col-sm-2 col-form-label"><b>Last Name:</b></label>
+          <div class="col-sm-3">
+          <input type="text" class="form-control" id="lastName" name="lastName" formControlName="lastName">
+          <small class="text-danger" *ngIf="!myForm.controls['userGroup']['controls'].lastName.valid && myForm.controls['userGroup']['controls'].lastName.touched">Project required!!</small>
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="empId" class="col-sm-2 col-form-label"><b>Employee ID:</b></label>
+          <div class="col-sm-2">
+          <input type="text" class="form-control" id="empId" name="empId" formControlName="empId">
+          <small class="text-danger" *ngIf="!myForm.controls['userGroup']['controls'].empId.valid && myForm.controls['userGroup']['controls'].empId.touched">User required!!</small>
+        </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-7">
+          <button type="submit" class="btn btn-primary  mr-3" [disabled]="!myForm.valid">{{btnType}}</button>
+          <button type="button" class="btn btn-primary" (click)="resetForm()">Reset</button>
+          </div>
+      </div>
+  </div>
+  </form>
+  <hr/>
+  <div class="form-group row">
+      <label for="search" class="col-sm-1 col-form-label"><b>Search:</b></label>
+      <div class="col-sm-3">
+        <input type="text" #firstName (keyup)="0" class="form-control" id="search" name="search">
+      </div>
+      <label class="col-form-label"><b>Sort:</b></label>
+      <div class="col-sm-5">
+          <button type="button" (click) = "sortBy('firstName')" class="btn btn-primary  mr-3">First Name</button>
+          <button type="button" (click) = "sortBy('lastName')" class="btn btn-primary  mr-3">Last Name</button>
+          <button type="button" (click) = "sortBy('empId')" class="btn btn-primary  mr-3">Employee ID</button>
+      </div>
+  </div>
+  <hr/>
+  <div class="row table-responsive w-75 p-3">
+      <table class="table" style="border-collapse: collapse;">
+          <tbody *ngFor="let user of users | userfilter : firstName.value | usersortfilter : property">
+            <tr>
+                <td style="border-top: none;"><input class="form-control" type="text" placeholder="{{user.firstName}}" readonly></td>
+                <td style="border-top: none;"><button type="button" class="btn btn-primary" routerLink="/addUser/{{user.userId}}">Edit
+                </button></td>
+            </tr>
+            <tr>
+                <td style="border-top: none;"><input class="form-control" type="text" placeholder="{{user.lastName}}" readonly></td>
+                <td style="border-top: none;"><button type="button" class="btn btn-danger" (click)="deleteUser(user.userId)">Delete
+                  </button></td>
+              </tr>
+              <tr>
+                  <td style="border-top: none;"><input class="form-control" type="text" placeholder="{{user.empId}}" readonly></td>
+                </tr>
+          </tbody>
+        </table>
+        </div>
+

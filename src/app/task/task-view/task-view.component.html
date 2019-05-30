@@ -1,0 +1,107 @@
+<div class="form-group row">
+    <label for="task" class="col-sm-2 col-form-label"><b>Task:</b></label>
+    <div class="col-sm-3">
+      <input type="text" #taskName (keyup)="0" class="form-control" id="task" name="task">
+    </div>
+    <label for="pTask" class="col-sm-2 col-form-label"><b>Parent Task:</b></label>
+    <div class="col-sm-3">
+      <input type="text" #parentTask (keyup)="0" class="form-control" id="pTask" name="pTask">
+    </div>
+</div>
+<div class="form-group row">
+    <label for="priorityFrom" class="col-sm-2 col-form-label"><b>Priority From:</b></label>
+    <div class="col-sm-1">
+      <input type="text" #priorityFrom (keyup)="0" class="form-control" id="priorityFrom" name="priorityFrom">
+    </div>
+    <label for="priorityTo" class="col-sm-1 col-form-label"><b>Priority To:</b></label>
+    <div class="col-sm-1">
+      <input type="text" #priorityTo (keyup)="0" class="form-control" id="priorityTo" name="priorityTo">
+    </div>
+    <label for="startDate" class="col-sm-1 col-form-label"><b>Start Date:</b></label>
+    <div class="col-sm-2">
+      <input type="date" #startDate (keyup)="0" class="form-control" id="startDate" name="startDate">
+    </div>
+    <label for="endDate" class="col-sm-1 col-form-label"><b>End Date:</b></label>
+    <div class="col-sm-2">
+      <input type="date" #endDate (keyup)="0" class="form-control" id="endDate" name="endDate">
+    </div>
+</div>
+<hr/>
+<div class="form-group row">
+    <label for="search" class="col-sm-1 col-form-label"><b>Project:</b></label>
+    <div class="col-sm-3">
+      <input type="text" readonly [(ngModel)]="project.project" class="form-control" id="search" name="search">
+    </div>
+    <button type="button" class="btn btn-primary  mr-3" data-toggle="modal" data-target="#projectModal" (click)="getProjects()">Search</button>
+    <label class="col-form-label"><b>Sort By:</b></label>
+    <div class="col-sm-5">
+        <button type="button" (click) = "sortBy('taskStartDate')" class="btn btn-primary  mr-3">Start Date</button>
+        <button type="button" (click) = "sortBy('taskEndDate')" class="btn btn-primary  mr-3">End Date</button>
+        <button type="button" (click) = "sortBy('taskPriority')" class="btn btn-primary  mr-3">Priority</button>
+        <button type="button" (click) = "sortBy('taskCompleted')" class="btn btn-primary  mr-3">Completed</button>
+    </div>
+</div>
+<hr/>
+<div class="container">
+  <span class="h4 text-danger">{{status}}</span>
+</div>
+<div class="row table-responsive">
+    <table class="table">
+        <tbody *ngFor="let task of project.tasks | taskfilter : taskName.value : parentTask.value : priorityFrom.value : priorityTo.value : startDate.value : endDate.value | tasksortfilter : property">
+            <tr>
+                <th scope="col">Task</th>
+                <th scope="col">Parent</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Start</th>
+                <th scope="col">End</th>
+              </tr>
+            <tr>
+                <td>
+                    <div class="card text-white bg-secondary mb-3">
+                      <div class="card-body">
+                          <h5 class="card-title">{{task.taskName}}</h5>
+                      </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="card text-white bg-secondary mb-3">
+                      <div class="card-body">
+                          <h5 class="card-title">{{task.parentTask.parentTask}}</h5>
+                      </div>
+                    </div>
+                </td>
+                <td>{{task.priority}}</td>
+                <td>{{task.startDate}}</td>
+                <td>{{task.endDate}}</td>
+                <td><button type="button" [disabled]="isEnded(task.endDate)" class="btn btn-primary" routerLink="/addTask/{{task.taskId}}">Edit
+                  </button></td>
+                <td><button type="button" [disabled]="isEnded(task.endDate)" class="btn btn-danger" (click)="endTask(task.taskId)">End Task
+                  </button></td>
+            </tr>
+        </tbody>
+      </table>
+      </div>
+      <!-- Projects Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="projectTitle">Projects</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeModal>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="list-group" *ngFor="let project of projects">
+                <li class="list-group-item list-group-item-action" (click)="selectedProject(project.projectId)">
+                  {{project.project}}
+                </li>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
